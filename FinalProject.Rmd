@@ -1,0 +1,100 @@
+---
+title: "Police Shooting Fatalities in the United States"
+author: "Neha Gyawali"
+date: "4/26/2022"
+output: slidy_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Package Installation
+```{r}
+#install.packages("usmap")
+#install.packages("uspop")
+options(warn=-1)
+
+library(tidyverse)
+library(usmap)
+library(ggplot2)
+library(plotly)
+
+#read data
+data <- read_csv("fatal-police-shootings-data.csv")
+top25 <- read_csv("top25.csv")
+top25 <- top25[1:25,]
+top25 <- top25[,1:7]
+```
+
+## Gender Breakdown
+Here we can see the difference in the number of female versus male fatalities. This helps us understand the demographic that is in danger of being killed by a police officer.
+```{r}
+
+genderBreakdown <- data %>% group_by(gender) %>%  summarise(count = n())
+genderBreakdown
+
+
+gender <- c(327, 6913)
+color =  c("mistyrose", "lightblue")
+pie( gender, labels = c("4.5%", "95.48%"), col = color)
+legend("topleft", legend = c("Female", "Male"),
+       fill =  c("mistyrose", "lightblue"))
+title("Gender Breakdown of Police Fatalities")
+
+#
+
+```
+
+## Police Fatalities 
+
+Some text about this table and how interesting the results are! 
+
+```{r}
+lat_long <- data %>% select(longitude, latitude, race, name, date, manner_of_death, armed, age, city, flee) %>% rename(lat = latitude, lon = longitude)
+lat_long <- na.omit(lat_long)
+
+transformed_lat_long <- usmap_transform(lat_long)
+
+p <- plot_usmap(regions = "states") + geom_point(data = transformed_lat_long, aes(x = x, y=y, color =race, text = paste("Name: ", name, "\nArmed: ", armed, "\nAge: ", age, "\nCity: ", city, "\nManner of Death: ", manner_of_death, "\nDate: ", date, "\nFleeing: ", flee )), alpha = .2, position = "jitter")  + scale_color_manual(values = c("Asian" = "purple",  "Hispanic" = "green", "Native American" = "pink", "Other" = "blue", "White"= "yellow", "Black" = "red"))+ labs(title = "Police Fatalities Locations")  + theme(panel.background=element_blank()) 
+
+p <- ggplotly(p) 
+p
+```
+
+## Race Breakdown of Police Fatalities in the top 25 Most Fatal Cities
+
+```{r}
+#find cities with most fatalities
+numberfatalities <- data %>% group_by(city) %>%  summarise(count = n()) %>%  arrange(desc(count))
+
+
+#take top 30 most fatal cities
+mostDeaths <- numberfatalities[1:25,]
+
+topdeadliestBreakdown <- merge(data, mostDeaths)
+
+
+#graph with race breakdown
+d <- ggplot(data = topdeadliestBreakdown, aes(x = reorder(city, city, function(x)-length(x)), fill = race)) + geom_bar() + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + ggtitle("Race Breakdown with Fatality Count") + ylab("Fatality Count") + xlab("City") + labs(fill = "Race") 
+d
+```
+
+```{r}
+d <- ggplot(data = topdeadliestBreakdown, aes(x = reorder(city, city, function(x)-length(x)), fill = race)) + geom_bar(position = "fill") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + labs(title = "Race Breakdown with Proportions", fill = "Race")+ xlab("City") + ylab("Proportion")
+d
+```
+
+some text about how cool my plot is. 
+
+---
+```{r}
+ggplot(data %>% date, aes(x = o, y = value)) +
+  geom_line(aes(color = key, group = key))
+```
+
+Three dashes make a new slide without having to put a title, and the three-# titles don't make a new slide, only the two and one. 
+
+### see? 
+
+still on the same slide. 
