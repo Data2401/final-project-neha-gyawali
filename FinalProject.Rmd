@@ -9,7 +9,7 @@ output: slidy_presentation
 knitr::opts_chunk$set(echo = FALSE)
 ```
 ## Introduction
-\ Unnecessary violence employed by many police officers throughout the US is an issue that needs to be addressed and dealt with. Recently, police fatalities have been highlighted in the media for their often unjust natures. Black men especially seem to be more targeted than the rest of the population. Let's take a look at police fatalities data that has been gathered by the Washington Post starting from 2015 to now to help us understand what demographic is at risk. We will take a look at the top 25 most fatal cities and break down the fatalities by race. We will also compare the race breakdown of the fatalities to the race breakdown of the population of the cities. For this we will use census data obtained from https://www.statsamerica.org/town/ that givs us demographic data for US cities. 
+Unnecessary violence employed by many police officers throughout the US is an issue that needs to be addressed and dealt with. Recently, police fatalities have been highlighted in the media for their often unjust natures. Black men especially seem to be more targeted than the rest of the population. Let's take a look at police fatalities data that has been gathered by the Washington Post starting from 2015 to now to help us understand what demographic is at risk. We will take a look at the top 25 most fatal cities and break down the fatalities by race. We will also compare the race breakdown of the fatalities to the race breakdown of the population of the cities. For this we will use census data obtained from https://www.statsamerica.org/town/ that gives us demographic data for US cities. 
 ---
 ## Package Installation
 ```{r, warning=FALSE}
