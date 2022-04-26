@@ -21,6 +21,8 @@ knitr::opts_chunk$set(echo = FALSE,  warning = FALSE, message = F )
 
 Unnecessary violence employed by many police officers throughout the US is an issue that needs to be addressed and dealt with. Recently, police fatalities have been highlighted in the media for their often unjust natures. Black men especially seem to be more targeted than the rest of the population. Let's take a look at police fatalities data that has been gathered by the Washington Post starting from 2015 to now to help us understand what demographic is at risk. We will take a look at the top 25 most fatal cities and break down the fatalities by race. We will also compare the race breakdown of the fatalities to the race breakdown of the population of the cities. For this we will use census data obtained from https://www.statsamerica.org/town/ that gives us demographic data for US cities.
 
+Washinton Post Data: https://github.com/washingtonpost/data-police-shootings
+
 
 
 # Package Installation and Data Read-in
@@ -60,6 +62,8 @@ data <- read_csv("fatal-police-shootings-data.csv")
 
 top25 <- read_csv("top25.csv")
 
+#take in the columns needed 
+
 top25 <- top25[1:25,]
 
 top25 <- top25[,1:8]
@@ -72,7 +76,7 @@ top25 <- top25[,1:8]
 
  
 
-\ Here we can see the difference in the number of female versus male fatalities. This helps us understand the demographic that is in danger of being killed by a police officer. \
+Here we can see the difference in the number of female versus male fatalities. This helps us understand the demographic that is in danger of being killed by a police officer. \
 
 ```{r}
 
@@ -96,7 +100,8 @@ title("Gender Breakdown of Police Fatalities")
 
  
 
-\ When looking at this breakdown, we can tell that males are much more likely to die from a police fatality than women.
+
+When looking at this breakdown, we can tell that males are much more likely to die from a police fatality than women.
 
  
 
@@ -105,7 +110,7 @@ title("Gender Breakdown of Police Fatalities")
 First lets look at the number of people that have been killed by the police broken down by race.
  
 
-```{r}
+```{r }
 
 raceBreakdown <- data %>% group_by(race) %>%  summarise(count = n())
 
@@ -143,8 +148,7 @@ ggplot(dat)+ geom_col(aes(x=race, y =raceBreakdown2, fill = race)) +labs(title =
 
  
 
-\ These race breakdown charts show that the race breakdown of police fatalities are not proportional to the race breakdown of the United States as a whole. White people make up 60% of the population while they are only 20% of the fatalities. While Black people make up 13.4% of the population and are 21.9% of all fatalities. Hispanic people are
-
+These race breakdown charts show that the race breakdown of police fatalities are not proportional to the race breakdown of the United States as a whole. White people make up 60% of the population while they are only 20% of the fatalities. While Black people make up 13.4% of the population and are 21.9% of all fatalities. These are some of the most notable disparities between the percentages of the two groups of data. 
  
 
  
@@ -153,7 +157,7 @@ ggplot(dat)+ geom_col(aes(x=race, y =raceBreakdown2, fill = race)) +labs(title =
 
  
 
-Some text about this table and how interesting the results are!
+This is a map in which each fatality with an exact longitude and latitude given has been mapped. When you hover over the data points representing these individuals, you can see their name, their race, their age, whether or not they were armed, the date on which they were killed, whether or not they were fleeing, and the city in which they were killed. The data points are color coded by race. 
 
  
 
@@ -194,7 +198,7 @@ numberfatalities <- data %>% group_by(city) %>%  summarise(count = n()) %>%  arr
 
  
 
-#take top 30 most fatal cities
+#take top 25 most fatal cities
 
 mostDeaths <- numberfatalities[1:25,]
 
@@ -226,7 +230,8 @@ d
 
  
 
-\ Using these graphs we can see the top 25 cities with the most police fatalities. The first graph shows us the race breakdown in numbers and the second one shows us the race breakdown in percentage. We can see that in cities such as Chicago, Columbus, New York City, St.Louis, Atlanta, Louisville, and Philadelphia, Black people make up more than 50% of fatalities. Lets now look at the population breakdown of these cities to see they are proportional.
+
+Using these graphs we can see the top 25 cities with the most police fatalities. The first graph shows us the race breakdown in numbers and the second one shows us the race breakdown in percentage. We can see that in cities such as Chicago, Columbus, New York City, St.Louis, Atlanta, Louisville, Baltimore, and Philadelphia, Black people make up more than 50% of fatalities. Lets now look at the population breakdown of these cities to see they are proportional.
 
  
 
@@ -239,7 +244,10 @@ ggplot(top25) + geom_col(width = 4.5, aes(x = City , y = count, fill = race), po
  
 ```
 
- 
+When comparing Fatality and Population graphs of these cities, it is clear to see that their race proportions are not equal. The only city with a 50% or more Black population is Baltimore, yet even there the two graphs are not proportionate as about 60% of the population is Black compared to about 90% of the police fatalities.
+
+
+
 
 ---
 
@@ -249,10 +257,15 @@ ggplot(top25) + geom_col(width = 4.5, aes(x = City , y = count, fill = race), po
 data4 <- data  %>% mutate(date = (as.Date(date, "%m/%d/%Y"))) %>%  group_by(date) %>% summarise(count = n())
 
 
-m <- ggplot(data4, aes(x=date, y=count))+ geom_line(aes(x = date, y = rollmean(count, 31, na.pad=TRUE))) +xlab("Date") + ylab("Police Fatalities per Day") 
+m <- ggplot(data4, aes(x=date, y=count))+ geom_line(aes(x = date, y = rollmean(count, 31, na.pad=TRUE))) +xlab("Date") + ylab("Police Fatalities Per Day") + labs(title = "Daily Police Fatalities")
 
 m
 
 ```
 
-When looking at this graph that shows us average police fatalities per day over time, we see that some of the major decreases can be accounted for by the pandemic when every one had to stay at home. Other dips could be accounted for as a result of protests over infamous deaths
+When looking at this graph that shows us average police fatalities per day over time, we see that some of the major decreases can be accounted for by the pandemic when every one had to stay at home. Other dips could be accounted for as a result of protests over police brutality. As seen in 2018, we reached a recent high in police fatalities at about 3.75 people a day which dipped to a low of 2 people a day shortly after.
+
+
+# What Does this Data Tell Us
+
+This data helps us to understand who is more likely to be at risk of becoming a police fatality. It is clear to see that, depending on the location, Black and Hispanic people are likely to be disproportionately killed by police officers. This data is limited in that we do not have information on every person that was detained by a police officer and not killed, only on those whose lives were taken. 
