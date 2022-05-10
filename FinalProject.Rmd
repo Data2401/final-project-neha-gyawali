@@ -148,7 +148,11 @@ ggplot(dat)+ geom_col(aes(x=race, y =raceBreakdown2, fill = race)) +labs(title =
 
  
 
+<<<<<<< HEAD
 These race breakdown charts show that the race breakdown of police fatalities are not proportional to the race breakdown of the United States as a whole. White people make up 60% of the population while they are only 20% of the fatalities. While Black people make up 13.4% of the population and are 21.9% of all fatalities. These are some of the most notable disparities between the percentages of the two groups of data. 
+=======
+\ These race breakdown charts show that the race breakdown of police fatalities are not proportional to the race breakdown of the United States as a whole. White people make up 60% of the population while they are only 20% of the fatalities. While Black people make up 13.4% of the population and are 21.9% of all fatalities. These are some of the most notable disparities between the percentages of the two groups of data. 
+>>>>>>> f1340678676a93b7ffde17f8aa69b634bfe5ff91
  
 
  
@@ -264,8 +268,11 @@ m
 ```
 
 When looking at this graph that shows us average police fatalities per day over time, we see that some of the major decreases can be accounted for by the pandemic when every one had to stay at home. Other dips could be accounted for as a result of protests over police brutality. As seen in 2018, we reached a recent high in police fatalities at about 3.75 people a day which dipped to a low of 2 people a day shortly after.
+<<<<<<< HEAD
 
 
 # What Does this Data Tell Us
 
 This data helps us to understand who is more likely to be at risk of becoming a police fatality. It is clear to see that, depending on the location, Black and Hispanic people are likely to be disproportionately killed by police officers. This data is limited in that we do not have information on every person that was detained by a police officer and not killed, only on those whose lives were taken. 
+=======
+>>>>>>> f1340678676a93b7ffde17f8aa69b634bfe5ff91
