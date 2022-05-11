@@ -1,0 +1,275 @@
+---
+title: "Police Shooting Fatalities in the United States"
+author: "Neha Gyawali"
+date: "4/26/2022"
+output: slidy_presentation
+---
+
+ 
+
+```{r setup, include=FALSE}
+
+knitr::opts_chunk$set(echo = FALSE,  warning = FALSE, message = F )
+
+```
+
+ 
+
+# Introduction
+
+ 
+
+Unnecessary violence employed by many police officers throughout the US is an issue that needs to be addressed and dealt with. Recently, police fatalities have been highlighted in the media for their often unjust natures. Black men especially seem to be more targeted than the rest of the population. Let's take a look at police fatalities data that has been gathered by the Washington Post starting from 2015 to now to help us understand what demographic is at risk. We will take a look at the top 25 most fatal cities and break down the fatalities by race. We will also compare the race breakdown of the fatalities to the race breakdown of the population of the cities. For this we will use census data obtained from https://www.statsamerica.org/town/ that gives us demographic data for US cities.
+
+Washinton Post Data: https://github.com/washingtonpost/data-police-shootings
+
+
+
+# Package Installation and Data Read-in
+
+ 
+
+```{r, echo = T}
+
+
+# Load tidyverse to manipulate data
+
+# Load usmap to make plot
+
+# Load ggplot2 and plotly for graphing,
+
+# load lubridate to configure date settings for plotting
+
+# load zoo for timeseries data configuration
+
+library(tidyverse, warn.conflicts = F)
+
+options(tidyverse.quiet = TRUE)
+
+library(usmap, warn.conflicts = F)
+
+library(ggplot2, warn.conflicts = F)
+
+library(plotly, warn.conflicts = F)
+
+library(lubridate)
+
+library(zoo)
+
+#read data
+
+data <- read_csv("fatal-police-shootings-data.csv")
+
+top25 <- read_csv("top25.csv")
+
+#take in the columns needed 
+
+top25 <- top25[1:25,]
+
+top25 <- top25[,1:8]
+
+```
+
+ 
+
+# Gender Breakdown
+
+ 
+
+Here we can see the difference in the number of female versus male fatalities. This helps us understand the demographic that is in danger of being killed by a police officer. \
+
+```{r}
+
+genderBreakdown <- data %>% group_by(gender) %>%  summarise(count = n())
+
+ 
+
+gender <- c(327, 6913)
+
+color =  c("mistyrose", "lightblue")
+
+pie( gender, labels = c("4.5%", "95.48%"), col = color)
+
+legend("topright", legend = c("Female", "Male"),
+
+       fill =  c("mistyrose", "lightblue"))
+
+title("Gender Breakdown of Police Fatalities")
+
+```
+
+ 
+
+
+When looking at this breakdown, we can tell that males are much more likely to die from a police fatality than women.
+
+ 
+
+# Race Breakdown Throughout the United States
+
+First lets look at the number of people that have been killed by the police broken down by race.
+ 
+
+```{r }
+
+raceBreakdown <- data %>% group_by(race) %>%  summarise(count = n())
+
+knitr::kable(raceBreakdown)
+
+```
+
+Now, lets look at the race breakdown by percentage of the number of people killed by police officers versus the population breakdown of the United States by percentage.
+
+```{r}
+#data from census.gov
+
+populationBreakdown <- c(5.9, 13.4, 18.5, 1.3, 3.0, 60.1, 0)
+
+raceBreakdown2 <- c(1.44, 21.9, 15.2, 1.3, 0.3, 19.5, 6.16)
+
+race <- c("Asian", "Black", "Hispanic", "Native American", "Other", "White", "NA")
+
+
+dat<- data.frame(race, populationBreakdown, raceBreakdown2)
+
+
+ggplot(dat)+ geom_col(aes(x=race, y = populationBreakdown, fill = race)) + labs(title = "Race Breakdown of US Population") + scale_fill_manual(values = c("Asian" = "navyblue",  "Hispanic" = "cadetblue4", "Native American" = "darkolivegreen", "Other" = "darkviolet", "White"= "royalblue", "Black" = "red4", "NA" = "lavenderblush4")) + coord_cartesian(ylim = c(0, 65)) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +xlab("Race") + ylab("Proportion")
+
+ggplot(dat)+ geom_col(aes(x=race, y =raceBreakdown2, fill = race)) +labs(title = "Race Breakdown of Police Fatalities")  + scale_fill_manual(values = c("Asian" = "navyblue",  "Hispanic" = "cadetblue4", "Native American" = "darkolivegreen", "Other" = "darkviolet", "White"= "royalblue", "Black" = "red4", "NA" = "lavenderblush4")) + coord_cartesian(ylim = c(0, 65))+ theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) +xlab("Race") + ylab("Proportion")
+
+ 
+
+ 
+
+
+```
+
+ 
+
+ 
+
+These race breakdown charts show that the race breakdown of police fatalities are not proportional to the race breakdown of the United States as a whole. White people make up 60% of the population while they are only 20% of the fatalities. While Black people make up 13.4% of the population and are 21.9% of all fatalities. These are some of the most notable disparities between the percentages of the two groups of data. 
+
+\ These race breakdown charts show that the race breakdown of police fatalities are not proportional to the race breakdown of the United States as a whole. White people make up 60% of the population while they are only 20% of the fatalities. While Black people make up 13.4% of the population and are 21.9% of all fatalities. These are some of the most notable disparities between the percentages of the two groups of data. 
+ 
+
+ 
+
+# Police Fatalities
+
+ 
+
+This is a map in which each fatality with an exact longitude and latitude given has been mapped. When you hover over the data points representing these individuals, you can see their name, their race, their age, whether or not they were armed, the date on which they were killed, whether or not they were fleeing, and the city in which they were killed. The data points are color coded by race. 
+
+ 
+
+```{r}
+
+lat_long <- data %>% select(longitude, latitude, race, name, date, manner_of_death, armed, age, city, flee) %>% rename(lat = latitude, lon = longitude)
+
+lat_long <- na.omit(lat_long)
+
+ 
+
+transformed_lat_long <- usmap_transform(lat_long)
+
+ 
+
+p <- plot_usmap(regions = "states") + geom_point(data = transformed_lat_long, aes(x = x, y=y, color =race, text = paste("Name: ", name, "\nArmed: ", armed, "\nAge: ", age, "\nCity: ", city, "\nManner of Death: ", manner_of_death, "\nDate: ", date, "\nFleeing: ", flee )), alpha = .3, size=.75, position = "jitter")  + scale_color_manual(values = c("Asian" = "navyblue",  "Hispanic" = "cadetblue4", "Native American" = "darkolivegreen", "Other" = "darkviolet", "White"= "royalblue", "Black" = "red4"))+ labs(title = "Police Fatalities Locations")  + theme(panel.background=element_blank())
+
+
+p <- ggplotly(p)
+
+p
+
+```
+
+ 
+
+# Race Breakdown of Police Fatalities in the top 25 Most Fatal Cities
+
+ 
+
+```{r}
+
+#find cities with most fatalities
+
+numberfatalities <- data %>% group_by(city) %>%  summarise(count = n()) %>%  arrange(desc(count))
+
+ 
+
+ 
+
+#take top 25 most fatal cities
+
+mostDeaths <- numberfatalities[1:25,]
+
+ 
+
+topdeadliestBreakdown <- merge(data, mostDeaths)
+
+ 
+
+ 
+
+#graph with race breakdown
+
+d <- ggplot(data = topdeadliestBreakdown, aes(x = reorder(city, city, function(x)-length(x)), fill = race)) + geom_bar(width = .8) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + ggtitle("Race Breakdown with Fatality Count") + ylab("Fatality Count") + xlab("City") + labs(fill = "Race")  +scale_fill_manual(values = c("Asian" = "navyblue",  "Hispanic" = "cadetblue4", "Native American" = "darkolivegreen", "Other" = "darkviolet", "White"= "royalblue", "Black" = "red4", "NA" = "lavenderblush4"))
+
+d
+
+```
+
+ 
+
+```{r}
+
+d <- ggplot(data = topdeadliestBreakdown, aes(x = reorder(city, city, function(x)-length(x)), fill = race)) + geom_bar(width = .8, position = "fill") + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + labs(title = "Race Breakdown with Proportions", fill = "Race")+ xlab("City") + ylab("Proportion") +scale_fill_manual(values = c("Asian" = "navyblue",  "Hispanic" = "cadetblue4", "Native American" = "darkolivegreen", "Other" = "darkviolet", "White"= "royalblue", "Black" = "red4", "NA" = "lavenderblush4"))
+
+d
+
+```
+
+ 
+
+
+Using these graphs we can see the top 25 cities with the most police fatalities. The first graph shows us the race breakdown in numbers and the second one shows us the race breakdown in percentage. We can see that in cities such as Chicago, Columbus, New York City, St.Louis, Atlanta, Louisville, Baltimore, and Philadelphia, Black people make up more than 50% of fatalities. Lets now look at the population breakdown of these cities to see they are proportional.
+
+ 
+
+```{r}
+
+top25 <- pivot_longer(top25, cols = `Native American`:Other, names_to = c("race"), values_to = "count")
+
+ggplot(top25) + geom_col(width = 4.5, aes(x = City , y = count, fill = race), position = "fill") + scale_fill_manual(values = c("Asian" = "navyblue",  "Hispanic" = "cadetblue4", "Native American" = "darkolivegreen", "Other" = "darkviolet", "White"= "royalblue", "Black" = "red4", "NA" = "lavenderblush4"))  + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + scale_x_discrete(limits=top25$City) + labs(title = "Race Breakdown of City Populations", fill = "Race")+ xlab("City") + ylab("Proportion")
+
+ 
+```
+
+When comparing Fatality and Population graphs of these cities, it is clear to see that their race proportions are not equal. The only city with a 50% or more Black population is Baltimore, yet even there the two graphs are not proportionate as about 60% of the population is Black compared to about 90% of the police fatalities.
+
+
+
+
+---
+
+ 
+
+```{r}
+data4 <- data  %>% mutate(date = (as.Date(date, "%m/%d/%Y"))) %>%  group_by(date) %>% summarise(count = n())
+
+
+m <- ggplot(data4, aes(x=date, y=count))+ geom_line(aes(x = date, y = rollmean(count, 31, na.pad=TRUE))) +xlab("Date") + ylab("Police Fatalities Per Day") + labs(title = "Daily Police Fatalities")
+
+m
+
+```
+
+When looking at this graph that shows us average police fatalities per day over time, we see that some of the major decreases can be accounted for by the pandemic when every one had to stay at home. Other dips could be accounted for as a result of protests over police brutality. As seen in 2018, we reached a recent high in police fatalities at about 3.75 people a day which dipped to a low of 2 people a day shortly after.
+<<<<<<< HEAD
+
+
+# What Does this Data Tell Us
+
+This data helps us to understand who is more likely to be at risk of becoming a police fatality. It is clear to see that, depending on the location, Black and Hispanic people are likely to be disproportionately killed by police officers. This data is limited in that we do not have information on every person that was detained by a police officer and not killed, only on those whose lives were taken. 
+
